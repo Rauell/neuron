@@ -1,0 +1,52 @@
+# declare a name for this job to be sample_job
+#PBS -N neuronTest
+
+# request the queue
+#PBS -q low
+
+# request 1 node
+#PBS -l nodes=1
+
+# request 4 hours and 30 minutes of cpu time
+# NOT SPECIFIED
+# PBS -l cput=04:30:00
+
+# mail is sent to you when the job starts and when it terminates or aborts
+#PBS -m bea
+# specify your email address
+#PBS -M mph58@drexel.edu
+
+# By default, PBS scripts execute in your home directory, not the
+# directory from which they were submitted. The following line
+# places you in the directory from which the job was submitted.
+cd $PBS_O_WORKDIR
+
+# Run the program
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 1 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 2 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 3 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 4 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 5 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 6 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 7 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 8 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 9 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 10 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 11 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 12 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 13 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 14 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 15 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 16 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 17 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 18 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 19 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 20 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 21 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 22 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 23 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 24 stim 10 choice 13
+python /data2/L/Brain/max/Paper2.5Data/SimulateFinal/microcolumnSim_v5.py file 25 stim 10 choice 13
+
+exit 0
+
