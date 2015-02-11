@@ -80,9 +80,6 @@ for i in range(num_neurons):
 	neur_conn[i] = [int(num_str) for num_str in neur_conn[i]]
 
 fin.close()
-
-
-
 #######################################################
 #Initialzation End
 
@@ -93,18 +90,32 @@ fin.close()
 #Time it and set simulation parameters.
 start_time = time.time()
 
-#Load the various network information, electrical, and chemical synaptic connectivities.
-print num_neurons
-print index_inhib
-print sim_time
+dist = [[0, 100],[100, 0]]
+conns = [[0, 0],[0, 0]]
 
-Simulation = nsim.NeuSim(num_neurons, neur_dists, neur_conn, sim_time, index_inhib)
-#Simulation.TEST_RUN(num_neurons, neur_dists, neur_conn, sim_time, index_inhib, out_file)
+Simulation = nsim.NeuSim(2, dist, conns, 1000, 999)
+#Simulation = nsim.NeuSim(num_neurons, neur_dists, neur_conn, sim_time, index_inhib)
+#Simulation.Set_Chem_Conn_Weights(0.5, 0.2, -0.05, -0.1, 155.0, 150.0, 300.0)
 Simulation.Construct_Chem_Conn()
-Simulation.Temp_Stim(30)
-Simulation.Run(out_file)
-#Simulation.Write_To_File(out_file)
+Simulation.Stim_List(interval=100, noise=0)
+Simulation.Stim_List(interval=60, noise=0)
+#Simulation.Stim_Random(60, t_start = 350, t_end = 700, noise = 0)
 
+#Simulation.Stim_Set(nsim.Stimulus(0, interval=100, t_start=50, t_end = 650, noise=0, weight=3))
+#Simulation.Stim_Set(nsim.Stimulus(1, interval=100, t_start=475, t_end = 675, noise=0))
+#Simulation.Stim_Random(50, t_start = 10, noise = 0.5)
+#Simulation.Run(out_file)
+vec = Simulation.Run(raster_file=out_file, raster_format="%d\n%f\n")
 print time.time() - start_time, "seconds"
+
+
+import matplotlib
+import matplotlib.pyplot as plt
+for i in range(len(vec)-1):
+	plt.figure()
+	plt.plot(vec['t '], vec[str(i+1)])
+plt.show()
+
+
 #######################################################
 #Ending Simulation
