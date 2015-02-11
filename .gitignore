@@ -7,6 +7,10 @@ x86_64
 
 .*
 !.gitignore
+nsim/*
+!nsim/nsim.py
+!nsim/SignalProc_v1.py
+!nsim/test_input.txt
 
 # Compiled source #
 ###################
