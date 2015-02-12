@@ -16,7 +16,7 @@ Order of operations:
 
 Michael Royster
 Drexel University
-February 11, 2015
+February 12, 2015
 """
 
 # Importing modules
@@ -36,12 +36,13 @@ class Stimulus:
 
 	#Intialization function
 	def __init__(self,
-				ID, 
-				interval = None, 
-				t_start = None, 
-				t_end = None, 
-				noise = None, 
-				weight = None):
+			ID, 
+			interval = None, 
+			t_start = None, 
+			t_end = None, 
+			noise = None, 
+			weight = None):
+		# Assigning Stimulation values
 		self.ID = ID
 		self.interval = self.INT_DEF if interval is None else interval
 		self.t_start = self.T_START_DEF if t_start is None else t_start
@@ -49,6 +50,7 @@ class Stimulus:
 		self.noise = self.NOISE_DEF if noise is None else noise
 		self.weight = self.WEIGHT_DEF if weight is None else weight
 
+		# Ensuring that noise is within the proper range
 		if self.noise < 0:
 			self.noise = 0
 		elif self.noise > 1:
@@ -77,10 +79,25 @@ class NeuSim:
 
 
 ######################### BEGIN INITIALIZATION REGION ###########################
-
+	# CLASS Stimulus Creation Helper
+	# A blank class to allow alternate access to functions
+	class __StimCrtHelper:
+		pass
 # FUNCTION: Constructor
 # Constructor that loads hoc files, and calls necessary intializations, sans connections	
-	def __init__(self, neur_num, neur_dists, neur_conn, sim_time, index_inhib):
+	def __init__(self, 
+			neur_num, 
+			neur_dists, 
+			neur_conn, 
+			sim_time, 
+			index_inhib,
+			neur_cols = None, 
+			neur_pos = None):
+
+		# Instantiating Stim helper
+		self.Stim = NeuSim.__StimCrtHelper()
+		self.Stim.Add = self.Stim_Add
+		self.Stim.Add_Stim_List = self.Stim_Add_Stim_List 
 		
 		# Instantiating lists
 		self.__stims = []
@@ -89,6 +106,15 @@ class NeuSim:
 		self.__NC = []
 		self.__GAP = []
 		self.__stims = []
+
+		# Instantiating all other variables
+		self.__num = None
+		self.__pos = None
+		self.__conn = None
+		self.__time = None
+		self.__cols = None
+		self.__dists = None
+		self.__inhib = None
 
 
 		# Creating access to hoc interface
@@ -108,12 +134,21 @@ class NeuSim:
 	
 # FUNCTION: Initialize Simulation Variables
 # Initialization function for neuron geometry & inhibition network
-	def Initialize(self, neur_num, neur_dists, neur_conn, sim_time, index_inhib):
+	def Initialize(self, 
+			neur_num, 
+			neur_dists, 
+			neur_conn, 
+			sim_time, 
+			index_inhib,
+			neur_cols = None,
+			neur_pos = None):
 		# Setting variables
 		self.__num = neur_num
-		self.__dists = neur_dists
-		self.__conn = neur_conn
+		self.__pos = neur_pos		
 		self.__time = sim_time
+		self.__conn = neur_conn
+		self.__cols = neur_cols
+		self.__dists = neur_dists
 		self.__inhib = index_inhib
 	
 		# Creating neurons in the networks.
@@ -139,13 +174,15 @@ class NeuSim:
 # FUNCTION: Set Chemical Connection Weights
 # Mutator function to change the weights used with chemical connections	
 	def Set_Chem_Conn_Weights(self, 
-							EE=None, 
-							EI=None, 
-							IE=None, 
-							II=None, 
-							long_cutoff=None, 
-							delay_short_range=None, 
-							delay_long_range=None):
+			EE = None, 
+			EI = None, 
+			IE = None, 
+			II = None, 
+			long_cutoff = None, 
+			delay_short_range = None, 
+			delay_long_range = None):
+
+		# Setting vairables to defualts unless otherwise specified
 		self.__EE = self.CHEM_EE_DEF if EE is None else EE 
 		self.__EI = self.CHEM_EI_DEF if EI is None else EI
 		self.__IE = self.CHEM_IE_DEF if IE is None else IE 
@@ -254,61 +291,37 @@ class NeuSim:
 
 
 ########################### BEGIN STIMULATION REGION ############################
-	# FUNCTION: Create a list of Stimuli
-	# Creates a set of stimuli that fire together with the given parameters
-	def Stim_List(self, 
-				interval = Stimulus.INT_DEF, 
-				neuron_id = None,
-				noise = Stimulus.NOISE_DEF, 
-				t_start = Stimulus.T_START_DEF, 
-				t_end = Stimulus.T_END_DEF, 
-				weight = Stimulus.WEIGHT_DEF):
+	# FUNCTION: Add Stimuli
+	# Creates a set of stimuli that fire with the given parameters
+	def Stim_Add(self, 
+			interval = Stimulus.INT_DEF, 
+			neuron_id = None,
+			noise = Stimulus.NOISE_DEF, 
+			t_start = Stimulus.T_START_DEF, 
+			t_end = Stimulus.T_END_DEF, 
+			weight = Stimulus.WEIGHT_DEF):
 		
 		# Checking to see if all neurons are to be used					
 		if neuron_id is None:
 			neuron_id = range(self.__num)
 		
 		# Checking to see that the input is a list
-		elif type(nueron_id) is not list:
+		elif type(neuron_id) is not list:
 			neuron_id = [neuron_id]
 
 		# Creating stimuli list
 		stims = [Stimulus(ID, interval, t_start, t_end, noise, weight) for ID in neuron_id]
-		self.Stim_Set(stims)
-	'''
-	From the website: http://www.neuron.yale.edu/neuron/static/docs/help/neuron/neuron/mech.html#NetStim
-	NETSTIM
+		self.Stim_Add_Stim_List(stims)
+		return
 
-	SYNTAX
-	s = new NetStim(x)
-	s.interval ms (mean) time between spikes
-	s.number (average) number of spikes
-	s.start ms (most likely) start time of first spike
-	s.noise ---- range 0 to 1. Fractional randomness.
-	0 deterministic, 1 intervals have negexp distribution.
-	DESCRIPTION
-	Generates a train of presynaptic stimuli. Can serve as the source for a NetCon. This NetStim can also be be triggered by an input event. i.e serve as the target of a NetCon. If the stimulator is in the on=0 state and receives a positive weight event, then the stimulator changes to the on=1 state and goes through its burst sequence before changing to the on=0 state. During that time it ignores any positive weight events. If, in the on=1 state, the stimulator receives a negative weight event, the stimulator will change to the off state. In the off state, it will ignore negative weight events. A change to the on state immediately causes the first spike.
+	def Stim_Add_Range(self, x_range = None, y_range = None, z_range = None):
+		pass
 
-	Fractional noise, 0 <= noise <= 1, means that an interval between spikes consists of a fixed interval of duration (1 - noise)*interval plus a negexp interval of mean duration noise*interval. Note that the most likely negexp interval has duration 0.
-
-	Since NetStim sends events, the proper idiom for specifying it as a source for a NetCon is
-
-	    objref ns, nc
-	    nc = new NetStim(.5)
-	    ns = new NetCon(nc, target...)
-
-	That is, do not use &nc.y as the source for the netcon.
-
-	See $NEURONHOME/src/nrnoc/netstim.mod
-	BUGS
-	Prior to version 5.2.1 an attempt was made to make the mean start time (noise > 0) correspond to the value of start. However since it is not possible to simulate events occurring at t < 0, these spikes were generated at t=0. Thus the mean start time was not start and the spikes at t=0 did not obey negexp statistics. For this reason, beginning with version 5.2.1 the semantics of start are the time of the most likely first spike and the mean start time is start + noise*interval. 
-
-	'''
 	# FUNCTION: Set Stimuli
 	# This function adds a set of stimuli to the simulation
-	def Stim_Set(self, stimuli):
+	def Stim_Add_Stim_List(self, stimuli):
 		
-		# Error Handeling
+		# Error Handling
 		if type(stimuli) is not list:
 			stimuli = [stimuli]
 		
@@ -325,7 +338,7 @@ class NeuSim:
 			stim_nc.interval = s.interval
 
 			# Creating synapse
-			syn = self.__h.ExpSyn(0.5, sec=self.__neurons[s.ID].soma[0])
+			syn = self.__h.ExpSyn(0.5, sec=self.__neurons[s.ID-1].soma[0])
 			nc = self.__h.NetCon(stim_nc, syn)
 			nc.weight[0] = s.weight
 
@@ -334,6 +347,7 @@ class NeuSim:
 			id_vec = self.__h.Vector()
 			nc.record(t_vec, id_vec)
 			self.__stims.append([stim_nc, syn, nc, t_vec, id_vec])
+		return
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$ END STIMULATION REGION $$$$$$$$$$$$$$$$$$$$$$$$$$$$#
 
 
@@ -347,10 +361,16 @@ class NeuSim:
 
 ################################# BEGIN DATA REGION #############################
 	
-
-
-	def Run(self, raster_file=None, raw_data_file=None, raster_format="%d\n%f\n", raster_delim = 0):
-		
+	# FUNCTION: Run
+	# This function executes the running of the simulation. It returns a dictionary
+	# of hoc vectors, containing the neuron potential data, labeled by the neuron ID.
+	# The dictionary also contains a list of times.
+	# The function also calls various writing subroutines if output files are specified. 
+	def Run(self, 
+			raster_file = None, 
+			raw_data_file = None, 
+			raster_format = "%d\n%f\n", 
+			raster_delim = 0):
 		#Creating result vector
 		rslt_vec = {}
 
@@ -372,15 +392,26 @@ class NeuSim:
 		if raster_file is not None:
 			self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_format)
 
+		# Writing raw data file if desired
+		if raw_data_file is not None:
+			self.WriteRawData(raw_data_file, rslt_vec)
+
 		return rslt_vec
 
-	def WriteRasterPlot(self, raster_file, data, fire_delim = 0, format="%d\n%f\n"):
-		# Adjusting format to always end with one line
-		if format[-1] != '\n':
-			format = format + '\n'
+	# FUNCTION: Write Raster Plot Data
+	# Writes neuron id's and spike times to output file. 1 id is paried to one 
+	# firing time. Spikes are recorded based on the threshold value
+	def WriteRasterPlot(self, raster_file, data, threshold = 0, use_tab = False):
+		# Using format specified by user
+		format = None
+		if use_tab:
+			format = "%d\t%f\n"
+		else:
+			format = "%d\n%f\n"
+
 
 		# Opening output file		
-		f = open(raster_file, 'wb')
+		f = open(raster_file, 'w')
 
 		# Looping over all neurons
 		for j in range(0, self.__num):
@@ -392,20 +423,40 @@ class NeuSim:
 			# Looping over every time
 			for i in range(0,len(data['t '])):
 				# If the potneital is above the delimiter and first fire
-				if (data[jstr][i] > fire_delim) & (canFire):
+				if (data[jstr][i] > threshold) & (canFire):
 					# Writing data
 					f.write(format % (j+1, data['t '][i]))
 					
 					# Signifying the spike has been found
 					canFire = False
-				elif (data[jstr][i] < fire_delim):
+				elif (data[jstr][i] < threshold):
 					# The signal can spike again
 					canFire = True
 		
 		# Closing file
 		f.close()
 		return
-		
+
+	# FUNCTION: Write Raw Data
+	# Writes a file with the first column listing the times and each other column
+	# representing the neuron potential. Columns are ordered by neuron id. 
+	def WriteRawData(self, data_file, data):
+		# Opening output file
+		f = open(data_file, 'w')
+
+		# Looping over time
+		for i in len(data['t ']):
+			# Writing time
+			f.write('%f' % data['t '][i])
+			
+			# Looping over neurons
+			for j in range(0, self.__num):
+				f.write('\t%f' % data[str(j+1)][i])
+			f.write('\n')
+
+		# Closing file
+		f.close()
+		return
 		
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END DATA REGION $$$$$$$$$$$$$$$$$$$$$$$$$$$$$#		
 		
