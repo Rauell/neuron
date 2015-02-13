@@ -163,6 +163,8 @@ class NeuSim:
 			else:
 				neuron = self.__h.sIN()
 				self.__neurons.append(neuron)
+
+		# Finding 
 				
 		# Deleting current stimulations and connections since the network has changed
 		del self.__stims[:]
@@ -294,11 +296,11 @@ class NeuSim:
 	# FUNCTION: Add Stimuli
 	# Creates a set of stimuli that fire with the given parameters
 	def Stim_Add(self, 
-			interval = Stimulus.INT_DEF, 
 			neuron_id = None,
-			noise = Stimulus.NOISE_DEF, 
+			interval = Stimulus.INT_DEF, 
 			t_start = Stimulus.T_START_DEF, 
-			t_end = Stimulus.T_END_DEF, 
+			t_end = Stimulus.T_END_DEF,
+			noise = Stimulus.NOISE_DEF, 
 			weight = Stimulus.WEIGHT_DEF):
 		
 		# Checking to see if all neurons are to be used					
@@ -314,8 +316,38 @@ class NeuSim:
 		self.Stim_Add_Stim_List(stims)
 		return
 
-	def Stim_Add_Range(self, x_range = None, y_range = None, z_range = None):
-		pass
+	# FUNCTION: Add stimuli in rectangular block
+	# Creates a list of stimuli that are organized from the geometry of the
+	# neurons. Input ranges are given as percentages 
+	def Stim_Add_Rect(self, x = [0.0, 1.0], y = [0.0, 1.0], z = [0.0, 1.0]
+			interval = Stimulus.INT_DEF, 
+			t_start = Stimulus.T_START_DEF, 
+			t_end = Stimulus.T_END_DEF,
+			noise = Stimulus.NOISE_DEF, 
+			weight = Stimulus.WEIGHT_DEF):
+
+		# Preparing distances
+		x_dist = max(self.__pos[:,0]) - min(self.__pos[:,0]) 
+		y_dist = max(self.__pos[:,1]) - min(self.__pos[:,1]) 
+		z_dist = max(self.__pos[:,2]) - min(self.__pos[:,2])
+
+		# Finding bounds
+		x_lim = [x[0]*x_dists, x[1]*x_dists]
+		y_lim = [y[0]*y_dists, y[1]*y_dists]
+		z_lim = [z[0]*z_dists, z[1]*z_dists]
+
+		# Creating neuron id list
+		n_ID = []
+		for i in range(self.__num):
+			x, y, z = self.__pos[i,0], self.__pos[i,1], self.__pos[i,2]
+			if x >= x_lim[0] and x <= x_lim[1]:
+				if y >= y_lim[0] and y <= y+lim[1]:
+					if z >= z_lim[0] and z <= z_lim[1]:
+						n_ID.append(i)
+
+		self.Stim.Add(n_ID, interval, t_start, t_end, noise, weight)
+		return
+
 
 	# FUNCTION: Set Stimuli
 	# This function adds a set of stimuli to the simulation
