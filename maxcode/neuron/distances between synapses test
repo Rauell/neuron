@@ -1,0 +1,21 @@
+"""
+Code for generating an arbitrary neural network with basic neuronal features
+Max Henderson
+Drexel University
+Novemeber 2, 2012
+"""
+
+"""
+Import appropriate packages
+"""
+
+from neuron import *
+from nrn import *
+from itertools import chain
+from neuron import h
+from numpy import *
+from pylab import *
+import random
+import os
+
+Soma = h.Section()

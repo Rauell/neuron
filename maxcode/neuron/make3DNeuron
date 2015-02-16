@@ -1,0 +1,9 @@
+from neuron import *
+from nrn import *
+from itertools import chain
+from neuron import h
+Section = h. Section
+from numpy import *
+from pylab import *
+
+#Let's first try making two neurons...

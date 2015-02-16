@@ -1,0 +1,111 @@
+// Demonstrates Izap mechanism on a single compartment model with hh mechanism.
+// After end of simulation confirms frequency of applied current
+// by determining the instantaneous angular frequency from the recorded values.
+
+load_file("nrngui.hoc")
+
+load_file("rig.ses")
+
+objref yvec, tvec
+yvec = new Vector()
+tvec = new Vector()
+
+yvec.record(&Izap[0].i)
+tvec.record(&t)
+
+run()
+
+
+/*
+Confirm the time-dependence of frequency.
+The zap wave is simply a sine wave sin(theta)
+where theta is a function of time.
+The instantaneous frequency of a sine wave in radians/sec is
+dtheta/dt = w
+where
+w = 2*PI*f
+so instantaneous frequency in hz is f = (dtheta/dt) / (2*PI)
+
+The strategy:
+Normalize the amplitude of the sine wave.
+From the time course of sin(theta), calculate the time course of theta.
+We don't have asin, but we do have atan.
+However, atan returns values from -PI/2 to PI/2, 
+and can't distinguish between quadrants II-III and IV-I,
+so its output requires some processing.
+*/
+
+objref tmp
+tmp = yvec.c
+tmp.div(Izap[0].amp)
+
+func sin2tan() { local bar
+  bar = $1^2
+  if (bar==1) {
+    if ($1>0) {
+      bar = 1e9
+    } else {
+      bar = -1e9
+    }
+  } else {
+    bar = $1/sqrt(1 - bar)
+  }
+  return bar
+}
+
+tmp.apply("sin2tan")
+tmp.apply("atan") // runs only from -PI/2 to PI/2
+  // and switches direction at each extremum
+
+objref dyvec
+dyvec = yvec.c
+dyvec.deriv(1) // Euler difference
+
+for ii=1,dyvec.size()-1 {
+  if (dyvec.x[ii]<0) {
+    if (yvec.x[ii]>0) {
+      tmp.x[ii] = PI - tmp.x[ii]
+    } else {
+      tmp.x[ii] = -PI - tmp.x[ii]
+    }
+  }
+}
+
+// tmp now repeatedly runs monotonically from -PI to PI, then jumps back to -PI
+// must eliminate the jumps
+
+objref theta
+theta = new Vector()
+
+proc fixtheta() { local ii, fix  localobj foo
+  theta = tmp.c
+  foo = new Vector()
+  foo = theta.c
+
+  fix = 0
+  for ii=1,theta.size()-1 {
+    if (foo.x[ii]-foo.x[ii-1] < 0) {
+      fix += 2*PI
+    }
+    theta.x[ii] = theta.x[ii] + fix
+  }
+}
+
+fixtheta()
+
+// theta increases monotonically with time
+
+objref finst
+finst = theta.c
+
+finst.deriv(0.001*dt, 2) // central difference derivative this time
+// 0.001 factor is because dt is in ms, not seconds!
+finst.div(2*PI)
+
+objref gfinst
+gfinst = new Graph(0)
+gfinst.size(0,tstop,Izap[0].f0,Izap[0].f1)
+{gfinst.view(0, Izap[0].f0, tstop, Izap[0].f1, 689, 553, 300.48, 200.32)}
+gfinst.label(0.127796, 0.838658, "instantaneous freq", 2, 1, 0, 0, 1)
+
+finst.plot(gfinst, tvec)
