@@ -98,21 +98,22 @@ class NeuSim:
 		self.Stim = NeuSim.__StimCrtHelper()
 		self.Stim.Add = self.Stim_Add
 		self.Stim.Add_Stim_List = self.Stim_Add_Stim_List 
+		self.Stim.AddRect = self.Stim_Add_Rect
+
 		
 		# Instantiating lists
-		self.__stims = []
-		self.__neurons = []
-		self.__SYN = []
 		self.__NC = []
 		self.__GAP = []
+		self.__SYN = []
 		self.__stims = []
+		self.__neurons = []
 
 		# Instantiating all other variables
 		self.__num = None
 		self.__pos = None
+		self.__cols = None
 		self.__conn = None
 		self.__time = None
-		self.__cols = None
 		self.__dists = None
 		self.__inhib = None
 
@@ -128,7 +129,7 @@ class NeuSim:
 		self.__h.load_file ("sIN_template")
 	
 		# Initializing variables		
-		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib)
+		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib, neur_cols, neur_pos)
 		self.Set_Chem_Conn_Weights()
 		return
 	
@@ -142,6 +143,7 @@ class NeuSim:
 			index_inhib,
 			neur_cols = None,
 			neur_pos = None):
+
 		# Setting variables
 		self.__num = neur_num
 		self.__pos = neur_pos		
@@ -254,7 +256,7 @@ class NeuSim:
 
 					# Determine delay from intersomatic distance
 					# For long range speed
-					if float(self.__dists[i][j]) > self.__lc:	
+					if self.__dists[i][j] > self.__lc:	
 						nc.delay  = self.__dists[i][j]*d_long
 			
 					# For short range speed
@@ -311,6 +313,7 @@ class NeuSim:
 		elif type(neuron_id) is not list:
 			neuron_id = [neuron_id]
 
+
 		# Creating stimuli list
 		stims = [Stimulus(ID, interval, t_start, t_end, noise, weight) for ID in neuron_id]
 		self.Stim_Add_Stim_List(stims)
@@ -319,12 +322,16 @@ class NeuSim:
 	# FUNCTION: Add stimuli in rectangular block
 	# Creates a list of stimuli that are organized from the geometry of the
 	# neurons. Input ranges are given as percentages 
-	def Stim_Add_Rect(self, x = [0.0, 1.0], y = [0.0, 1.0], z = [0.0, 1.0]
+	def Stim_Add_Rect(self, x = [0.0, 1.0], y = [0.0, 1.0], z = [0.0, 1.0],
 			interval = Stimulus.INT_DEF, 
 			t_start = Stimulus.T_START_DEF, 
 			t_end = Stimulus.T_END_DEF,
 			noise = Stimulus.NOISE_DEF, 
 			weight = Stimulus.WEIGHT_DEF):
+
+		# Error catching
+		if None == self.__pos:
+			raise NameError('Neuron Positions not specified')
 
 		# Preparing distances
 		x_dist = max(self.__pos[:,0]) - min(self.__pos[:,0]) 
@@ -332,21 +339,23 @@ class NeuSim:
 		z_dist = max(self.__pos[:,2]) - min(self.__pos[:,2])
 
 		# Finding bounds
-		x_lim = [x[0]*x_dists, x[1]*x_dists]
-		y_lim = [y[0]*y_dists, y[1]*y_dists]
-		z_lim = [z[0]*z_dists, z[1]*z_dists]
+		x_lim = [x[0]*x_dist, x[1]*x_dist]
+		y_lim = [y[0]*y_dist, y[1]*y_dist]
+		z_lim = [z[0]*z_dist, z[1]*z_dist]
 
 		# Creating neuron id list
 		n_ID = []
 		for i in range(self.__num):
 			x, y, z = self.__pos[i,0], self.__pos[i,1], self.__pos[i,2]
 			if x >= x_lim[0] and x <= x_lim[1]:
-				if y >= y_lim[0] and y <= y+lim[1]:
+				if y >= y_lim[0] and y <= y_lim[1]:
 					if z >= z_lim[0] and z <= z_lim[1]:
 						n_ID.append(i)
 
 		self.Stim.Add(n_ID, interval, t_start, t_end, noise, weight)
 		return
+
+
 
 
 	# FUNCTION: Set Stimuli
@@ -356,7 +365,8 @@ class NeuSim:
 		# Error Handling
 		if type(stimuli) is not list:
 			stimuli = [stimuli]
-		
+
+		# Main loop
 		for s in stimuli:
 			#Configuring defualt options:
 			if Stimulus.T_END_DEF == s.t_end:
@@ -477,7 +487,7 @@ class NeuSim:
 		f = open(data_file, 'w')
 
 		# Looping over time
-		for i in len(data['t ']):
+		for i in range(len(data['t '])):
 			# Writing time
 			f.write('%f' % data['t '][i])
 			
