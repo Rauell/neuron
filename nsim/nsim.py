@@ -16,13 +16,87 @@ Order of operations:
 
 Michael Royster
 Drexel University
-February 12, 2015
+February 20, 2015
 """
 
 # Importing modules
 from neuron import *
 from neuron import h as _h
 from nrn import *
+import numpy
+
+
+
+########################## BEGIN NEURON FIND REGION #############################
+# FUNCTION: Find neurons in Rectangle
+# Returns a list of neuron ID's. Limits are given as percentages, of the
+# form [low, high], inclusive.
+# These boundaries are not periodic.
+# If the length of the box is not specified, 
+def GetRect( pos, L=None, x=[0.0, 1.0], y=[0.0, 1.0], z=[0.0, 1.0] ):
+
+	# Useful function variables
+	xyz = [x, y, z]
+	dim = [0, 1, 2]
+	dist = numpy.amax(pos) if L is None else L
+	lim = [[xyz[i][0]*dist, xyz[i][1]*dist] for i in dim ]
+
+	# Finding if neurons are within the specified rectangle
+	n_ID = []
+	for i in range(len(pos)):
+		include = True
+		for j in dim:
+			include = include and (lim[j][0]<=pos[i,j]) and (pos[i,j]<=lim[j][1])
+		if include:
+			n_ID.append(i+1)
+
+	return n_ID
+
+
+# FUNCTION: Find neurons in sphere
+# Returns a list of neuron ID's, centered on a specific neuron. 
+# The sphere can be converted to a shell by defining the inner_radius
+def GetSphere( dists, center, radius, inner_radius=0):
+
+	# Prepping function varaiables
+	c = center-1
+	a = inner_radius
+	b = radius
+
+	# Creating nueron id list
+	n_ID = []
+	for i in range(len(dists)):
+		r = dists[i,c]
+		if a <= r and r < b:
+			n_ID.append(i+1)
+	return n_ID
+
+
+# FUNCTION: Find neurons in columns
+# Returns a list of neuron ID's in the specfied columns
+def GetCol( col_list, IDs ):
+
+	# Prepping input variables
+	if type(IDs) is not list:
+		IDs = [IDs]
+	cols = numpy.array(col_list)
+	n_ID = []
+
+	# Creating nueron id list
+	for id in IDs:
+		temp = list(numpy.where(cols==id)[0]+1)
+		n_ID = n_ID + temp
+
+	return n_ID
+
+
+# FUNCTION: Find intersticial neurons
+# Returns a list intersticial neuron ID's
+def GetIntersticial(col_list):
+	return GetCol(col_list, -1)
+
+
+#$$$$$$$$$$$$$$$$$$$$$$$$$$$ END NEURON FIND REGION $$$$$$$$$$$$$$$$$$$$$$$$$$$$#
 
 # Stimulus class
 # This class contains a wrapper and defualts for a stimulus in the simulation
@@ -79,10 +153,6 @@ class NeuSim:
 
 
 ######################### BEGIN INITIALIZATION REGION ###########################
-	# CLASS Stimulus Creation Helper
-	# A blank class to allow alternate access to functions
-	class __StimCrtHelper:
-		pass
 # FUNCTION: Constructor
 # Constructor that loads hoc files, and calls necessary intializations, sans connections	
 	def __init__(self, 
@@ -93,13 +163,6 @@ class NeuSim:
 			index_inhib,
 			neur_cols = None, 
 			neur_pos = None):
-
-		# Instantiating Stim helper
-		self.Stim = NeuSim.__StimCrtHelper()
-		self.Stim.Add = self.Stim_Add
-		self.Stim.Add_Stim_List = self.Stim_Add_Stim_List 
-		self.Stim.AddRect = self.Stim_Add_Rect
-
 		
 		# Instantiating lists
 		self.__NC = []
@@ -297,7 +360,7 @@ class NeuSim:
 ########################### BEGIN STIMULATION REGION ############################
 	# FUNCTION: Add Stimuli
 	# Creates a set of stimuli that fire with the given parameters
-	def Stim_Add(self, 
+	def AddStim(self, 
 			neuron_id = None,
 			interval = Stimulus.INT_DEF, 
 			t_start = Stimulus.T_START_DEF, 
@@ -316,51 +379,13 @@ class NeuSim:
 
 		# Creating stimuli list
 		stims = [Stimulus(ID, interval, t_start, t_end, noise, weight) for ID in neuron_id]
-		self.Stim_Add_Stim_List(stims)
+		self.AddStimList(stims)
 		return
-
-	# FUNCTION: Add stimuli in rectangular block
-	# Creates a list of stimuli that are organized from the geometry of the
-	# neurons. Input ranges are given as percentages 
-	def Stim_Add_Rect(self, x = [0.0, 1.0], y = [0.0, 1.0], z = [0.0, 1.0],
-			interval = Stimulus.INT_DEF, 
-			t_start = Stimulus.T_START_DEF, 
-			t_end = Stimulus.T_END_DEF,
-			noise = Stimulus.NOISE_DEF, 
-			weight = Stimulus.WEIGHT_DEF):
-
-		# Error catching
-		if None == self.__pos:
-			raise NameError('Neuron Positions not specified')
-
-		# Preparing distances
-		x_dist = max(self.__pos[:,0]) - min(self.__pos[:,0]) 
-		y_dist = max(self.__pos[:,1]) - min(self.__pos[:,1]) 
-		z_dist = max(self.__pos[:,2]) - min(self.__pos[:,2])
-
-		# Finding bounds
-		x_lim = [x[0]*x_dist, x[1]*x_dist]
-		y_lim = [y[0]*y_dist, y[1]*y_dist]
-		z_lim = [z[0]*z_dist, z[1]*z_dist]
-
-		# Creating neuron id list
-		n_ID = []
-		for i in range(self.__num):
-			x, y, z = self.__pos[i,0], self.__pos[i,1], self.__pos[i,2]
-			if x >= x_lim[0] and x <= x_lim[1]:
-				if y >= y_lim[0] and y <= y_lim[1]:
-					if z >= z_lim[0] and z <= z_lim[1]:
-						n_ID.append(i)
-
-		self.Stim.Add(n_ID, interval, t_start, t_end, noise, weight)
-		return
-
-
 
 
 	# FUNCTION: Set Stimuli
 	# This function adds a set of stimuli to the simulation
-	def Stim_Add_Stim_List(self, stimuli):
+	def AddStimList(self, stimuli):
 		
 		# Error Handling
 		if type(stimuli) is not list:

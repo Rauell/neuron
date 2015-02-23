@@ -1,5 +1,8 @@
 sim_time	1000
-output_file	/home/mroyster/neuron/nsim/test_result.txt
-dists_file	/data2/L/Brain/mroyster/thinning/sims/dry_run_0/aut/youngDist_10.txt
-conn_file	/data2/L/Brain/mroyster/thinning/sims/dry_run_0/aut/young_chem_con1_10.txt
-net_conn_file	/data2/L/Brain/mroyster/thinning/sims/dry_run_0/aut/networkConstants10.txt
+raster_out	/data2/L/Brain/mroyster/solo/Sraster1.txt
+raw_out		/data2/L/Brain/mroyster/solo/Sraw1.txt
+pos_file	/data2/L/Brain/mroyster/solo/Pos1.txt
+col_file	/data2/L/Brain/mroyster/solo/Col1.txt
+dists_file	/data2/L/Brain/mroyster/solo/Dists1.txt
+conn_file	/data2/L/Brain/mroyster/solo/ConReg1.txt
+net_conn_file	/data2/L/Brain/mroyster/solo/networkConstants1.txt

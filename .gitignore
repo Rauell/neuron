@@ -12,6 +12,7 @@ aut/*
 !nsim/nsim.py
 !nsim/SignalProc_v1.py
 !nsim/test_input.txt
+!nsim/set.py
 
 # Compiled source #
 ###################
