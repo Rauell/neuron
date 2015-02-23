@@ -160,9 +160,7 @@ class NeuSim:
 			neur_dists, 
 			neur_conn, 
 			sim_time, 
-			index_inhib,
-			neur_cols = None, 
-			neur_pos = None):
+			index_inhib):
 		
 		# Instantiating lists
 		self.__NC = []
@@ -173,8 +171,6 @@ class NeuSim:
 
 		# Instantiating all other variables
 		self.__num = None
-		self.__pos = None
-		self.__cols = None
 		self.__conn = None
 		self.__time = None
 		self.__dists = None
@@ -203,16 +199,12 @@ class NeuSim:
 			neur_dists, 
 			neur_conn, 
 			sim_time, 
-			index_inhib,
-			neur_cols = None,
-			neur_pos = None):
+			index_inhib,):
 
 		# Setting variables
-		self.__num = neur_num
-		self.__pos = neur_pos		
+		self.__num = neur_num	
 		self.__time = sim_time
 		self.__conn = neur_conn
-		self.__cols = neur_cols
 		self.__dists = neur_dists
 		self.__inhib = index_inhib
 	
