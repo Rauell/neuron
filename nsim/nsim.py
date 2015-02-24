@@ -16,7 +16,7 @@ Order of operations:
 
 Michael Royster
 Drexel University
-February 20, 2015
+February 24, 2015
 """
 
 # Importing modules
@@ -26,77 +26,6 @@ from nrn import *
 import numpy
 
 
-
-########################## BEGIN NEURON FIND REGION #############################
-# FUNCTION: Find neurons in Rectangle
-# Returns a list of neuron ID's. Limits are given as percentages, of the
-# form [low, high], inclusive.
-# These boundaries are not periodic.
-# If the length of the box is not specified, 
-def GetRect( pos, L=None, x=[0.0, 1.0], y=[0.0, 1.0], z=[0.0, 1.0] ):
-
-	# Useful function variables
-	xyz = [x, y, z]
-	dim = [0, 1, 2]
-	dist = numpy.amax(pos) if L is None else L
-	lim = [[xyz[i][0]*dist, xyz[i][1]*dist] for i in dim ]
-
-	# Finding if neurons are within the specified rectangle
-	n_ID = []
-	for i in range(len(pos)):
-		include = True
-		for j in dim:
-			include = include and (lim[j][0]<=pos[i,j]) and (pos[i,j]<=lim[j][1])
-		if include:
-			n_ID.append(i+1)
-
-	return n_ID
-
-
-# FUNCTION: Find neurons in sphere
-# Returns a list of neuron ID's, centered on a specific neuron. 
-# The sphere can be converted to a shell by defining the inner_radius
-def GetSphere( dists, center, radius, inner_radius=0):
-
-	# Prepping function varaiables
-	c = center-1
-	a = inner_radius
-	b = radius
-
-	# Creating nueron id list
-	n_ID = []
-	for i in range(len(dists)):
-		r = dists[i,c]
-		if a <= r and r < b:
-			n_ID.append(i+1)
-	return n_ID
-
-
-# FUNCTION: Find neurons in columns
-# Returns a list of neuron ID's in the specfied columns
-def GetCol( col_list, IDs ):
-
-	# Prepping input variables
-	if type(IDs) is not list:
-		IDs = [IDs]
-	cols = numpy.array(col_list)
-	n_ID = []
-
-	# Creating nueron id list
-	for id in IDs:
-		temp = list(numpy.where(cols==id)[0]+1)
-		n_ID = n_ID + temp
-
-	return n_ID
-
-
-# FUNCTION: Find intersticial neurons
-# Returns a list intersticial neuron ID's
-def GetIntersticial(col_list):
-	return GetCol(col_list, -1)
-
-
-#$$$$$$$$$$$$$$$$$$$$$$$$$$$ END NEURON FIND REGION $$$$$$$$$$$$$$$$$$$$$$$$$$$$#
 
 # Stimulus class
 # This class contains a wrapper and defualts for a stimulus in the simulation
@@ -188,7 +117,7 @@ class NeuSim:
 		self.__h.load_file ("sIN_template")
 	
 		# Initializing variables		
-		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib, neur_cols, neur_pos)
+		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib)
 		self.Set_Chem_Conn_Weights()
 		return
 	
@@ -199,7 +128,7 @@ class NeuSim:
 			neur_dists, 
 			neur_conn, 
 			sim_time, 
-			index_inhib,):
+			index_inhib):
 
 		# Setting variables
 		self.__num = neur_num	
@@ -426,8 +355,8 @@ class NeuSim:
 	# The dictionary also contains a list of times.
 	# The function also calls various writing subroutines if output files are specified. 
 	def Run(self, 
-			raster_file = None, 
-			raw_data_file = None, 
+			raster_file = None,  
+			raw_data_file = None,
 			raster_format = "%d\n%f\n", 
 			raster_delim = 0):
 		#Creating result vector

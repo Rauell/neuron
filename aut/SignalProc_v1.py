@@ -103,11 +103,10 @@ Simulation.Construct_Chem_Conn()
 
 start = 575
 interval = 25
-Simulation.Stim_Add()
-#Simulation.Stim_Add(neuron_id = 1, interval=200, noise=0, weight=2)
-#Simulation.Stim_Add(neuron_id = 1, interval=25, noise=0, t_start=225, t_end=350)
-#Simulation.Stim_Add(neuron_id = 1, interval=25, noise=0, t_start=start, t_end=start+3*interval)
-#Simulation.Stim_Add(neuron_id = 2, interval=200, noise=0, t_start=100)
+Simulation.Stim.Add(neuron_id = 1, interval=200, noise=0)
+Simulation.Stim.Add(neuron_id = 1, interval=25, noise=0, t_start=225, t_end=350)
+Simulation.Stim.Add(neuron_id = 1, interval=25, noise=0, t_start=start, t_end=start+3*interval)
+Simulation.Stim.Add(neuron_id = 2, interval=200, noise=0, t_start=100)
 #Simulation.Stim_List(interval=60, noise=0)
 #Simulation.Stim_Random(60, t_start = 350, t_end = 700, noise = 0)
 
@@ -117,6 +116,7 @@ Simulation.Stim_Add()
 #Simulation.Run(out_file)
 vec = Simulation.Run(raster_file=out_file, raster_format="%d\n%f\n")
 print time.time() - start_time, "seconds"
+
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -128,6 +128,7 @@ for i in range(len(vec)-1):
 	plt.ylabel('Membrane Potential (mV)')
 	plt.title('Neuron %d' % (i+1))
 plt.show()
+
 
 #######################################################
 #Ending Simulation
