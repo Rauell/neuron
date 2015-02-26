@@ -115,7 +115,6 @@ index_inhib = int(lines[1])
 if 3 <= len(lines): #Accounting for variability in file format
 	L = int(lines[2])
 
-
 #Reading in neuron topology files 
 neur_dist = numpy.loadtxt(inputs['dist_file'], delimiter=',')
 neur_conn = numpy.loadtxt(inputs['conn_file'], delimiter=',')
@@ -127,9 +126,9 @@ if 'col_pos_file' in inputs:
 	nuer_pos = numpy.loadtxt(inputs['col_pos_file'], usecols=[1,2,3])
 else:
 	if 'col_file' in inputs:
-		neur_col = numpy.loadtxt(inputs['col_pos_file'], usecols=[0], dtype='int')
+		neur_col = numpy.loadtxt(inputs['col_file'], usecols=[0], dtype='int')
 	if 'pos_file' in inputs:
-		nuer_pos = numpy.loadtxt(inputs['pos_file'], usecols=[0,1,2])
+		nuer_pos = numpy.loadtxt(inputs['pos_file'], usecols=[0,1,2], delimiter=',')
 
 #Reading in output files
 if 'raw_file' in inputs:
@@ -144,7 +143,7 @@ if 'raster_file' in inputs:
 
 #Ending Double-Checking
 #######################################################
-if raw_out_file is None and raster_out_file is None:
+if (raw_out_file is None) and (raster_out_file is None):
 	print "\nWARNING! No ouptut file specfied. No data will be recorded"
 	answer = raw_input("Continue anyway? (y/n): ")
 

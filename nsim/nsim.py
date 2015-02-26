@@ -378,10 +378,12 @@ class NeuSim:
 
 		# Writing data to raster plot if desired
 		if raster_file is not None:
+			print raster_file
 			self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_format)
 
 		# Writing raw data file if desired
 		if raw_data_file is not None:
+			print raw_data_file
 			self.WriteRawData(raw_data_file, rslt_vec)
 
 		return rslt_vec
