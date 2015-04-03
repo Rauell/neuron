@@ -1,0 +1,59 @@
+
+MATLAB_ERR="***Error loading MATLAB environment\n"
+NEURON_ERR="***Error loading NEURON environment\n"
+
+SetupEnvFawn()
+{
+	# Function Variables
+	temp_err=""
+	MATLAB_PATH="/usr/local/MATLAB/matlab_env"
+	NEURON_PATH="/usr/local/neuron/nrnenv"
+
+	# Sourcing Matlab
+	if [ -f $MATLAB_PATH ];	then
+		source "$MATLAB_PATH"	
+	else
+		temp_err="$temp_err$MATLAB_ERR"
+	fi
+
+
+	# Sourcing Neuron
+	if [ -f $NEURON_PATH ]; then
+       	source "$NEURON_PATH"
+	else
+		temp_err="$temp_err$NEURON_ERR"
+	fi
+
+	# Exporting error message to be handled by something else
+	export PROFILE_ERR_MSG="$temp_err"
+}
+
+SetupEnvLocal()
+{
+	# Function Variables
+	temp_err=""
+
+	# PATH to nrnenv. My path is below
+	NEURON_PATH="/home/mroyster/neuron/nrnenv"
+
+	# Sourcing Neuron
+	if [ -f $NEURON_PATH ]; then
+       	source "$NEURON_PATH"
+	else
+		temp_err="$temp_err$NEURON_ERR"
+	fi
+
+	# Exporting error message to be handled by something else
+	export PROFILE_ERR_MSG="$temp_err"
+}
+
+
+
+
+
+##    START SCRIPT    ##
+HOST=`hostname`
+case $HOST in
+	fawn)	SetupEnvFawn;;
+	*)		SetupEnvLocal;;
+esac

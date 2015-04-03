@@ -1,0 +1,59 @@
+The following are the instructions to install NEURON on a fresh system. This is done from source code instead of a package due to an issue with depth-resolution n the NEURON package that needs to be adjusted for our purposes. These instructions are directed towards installation with the python interpreter and without InterViews, the interactive GUI.
+
+1)	Install ncurses and python developer packages. This is easiest performed by
+		sudo apt-get update
+		sudo apt-get install ncurses-dev
+		sudo apt-get install python-dev
+
+2) 	Download the NEURON source code from http://www.neuron.yale.edu/neuron/download/getstd . From here, you should only download nrn-nn.tar.gz
+
+
+3)	Make a new directory ~/neuron and unzip the download in this folder. Rename the unzipped folder to nrn. (Note, you shouldn't change the directory path once created. I think this will mess things up after you configure)
+
+4)	Edit the file nrn/src/nrnoc/cabcode.c.  Look for the line "#define NSECSTACK 200", and change the value from 200 to 200000000.
+
+5)	In the nrn directory, configure the installation with the following command
+		./configure --prefix=`pwd` --with-nrnpython=/usr/bin/python --without-nrniv
+
+6)	Now make the installer with the command
+		make
+
+7)	Install NEURON with the command
+		make install
+
+8)	Install the python interpreter by changing directories to src/nrnpython. Then execute the command
+		sudo python setup.py install
+
+9)	Create environment variables to access NEURON. I've taken the liberty of making some templates here, which I believe make life easier. In the neuron directory, create a file called nrnenv.  You can copy the file nrnenv_example into this new file. Please read the comments and adjust the file as appropriate
+
+10)	Set the environment variables up for this one session by executing
+		source nrnenv
+
+11)	Make the environment variables persist by adjusting the .profile or .bashrc file located in your home directory. To make fawn easily accessible to you, please copy at the FawnSetup function and main code to your .profile or .bashrc file.
+
+12)	Acquire the files listed below (repository location TBD) and place them in the neuron directory. Once there, run the command "nrnivmodl". This compiles the hoc files into C for better performance during simulation.
+	cadecay.mod
+	gapc.mod
+	gap.mod
+	hh2.mod
+	IM.mod
+	initizap.hoc
+	IT.mod
+	izap.mod
+	sIN_template
+	sPY_template
+
+
+
+
+
+At this point, you should be done!  Test everything out by opening up the npython interperter, and import neuron. You should see output similar to the text listed below.
+
+NEURON -- VERSION 7.3 ansi (1078:2b0c984183df) 2014-04-04
+Duke, Yale, and the BlueBrain Project -- Copyright 1984-2014
+See http://www.neuron.yale.edu/neuron/credits
+
+loading membrane mechanisms from x86_64/.libs/libnrnmech.so
+Additional mechanisms from files
+ IM.mod IT.mod cadecay.mod gap.mod gapc.mod hh2.mod izap.mod
+

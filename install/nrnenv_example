@@ -1,0 +1,83 @@
+# Setting up environment variables
+if [ -z "$N" ]; then
+
+	# For 32-bit Intel architecture
+	#export CPU=i686
+	# For 32-bit AMD architecture
+	#export CPU=i386
+	# For 64-bit Intel architecture
+	#export CPU=x86_64
+	# For 64-bit AMD architecture
+	#export CPU=amd64
+
+	# Input the path to where the neuron directory is
+	export NHOME=
+
+	# Other useful variables
+	export N=$NHOME/nrn
+	export PATH="$N/$CPU/bin:$PATH"
+
+
+
+
+	# Delete the multiline comment if you have the folder nsim installed in the neuron folder
+	:' Beginning of multi-line comment
+
+	PPATH="$NHOME/nsim"
+	if [ -z "$PYTHONPATH" ]
+	then
+    		export PYTHONPATH="$PPATH"
+	else
+    		export PYTHONPATH="$PYTHONPATH:PPATH"
+	fi
+
+	End of multi-line comment'
+
+fi
+
+
+# Implementing NEURON python routines
+# aka, use npython instead of python to run NEURON
+npython(){
+    # Call command
+    pycmd="python"
+
+    # Processing all input arguments
+    for var in "$@"
+    do
+
+        # Finding absolute path if input is file or directory
+        if [[ -d $var ]] || [[ -f $var ]];	then
+			i=0
+            topdir=$var
+            name="$(dirname "$topdir")"
+
+            while [ "$topdir" != "/" ]; do
+                i=$(($i+1))
+                parse[$i]="$(basename "$topdir")"
+                name="$topdir"
+                topdir="$(dirname "$topdir")"
+                [ "$topdir" = "." ] && topdir="$(pwd -P)"
+            done
+
+            inpath=""
+            while [ $i -gt 0 ];do
+                inpath="$inpath/${parse[$i]}"
+                i=$(($i-1))
+            done
+
+            var=$inpath
+        fi
+
+        # Ammeding command call
+        pycmd="$pycmd $var"
+    done
+
+    # Storing current directory	
+    DIR="$PWD"
+
+    # Switching to run in NHOME, running, then switching back
+	cd $NHOME
+	eval "$pycmd"
+	cd $DIR
+}
