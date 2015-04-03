@@ -14,4 +14,4 @@ col_file		/data2/L/Brain/mroyster/solo/Col1.txt
 # Output Files
 raster_file		/data2/L/Brain/mroyster/solo/Sraster1.txt
 raw_file		/data2/L/Brain/mroyster/solo/Sraw1.txt
-
+spike_file		/data2/L/Brain/mroyster/solo/Sspike1.txt
