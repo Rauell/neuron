@@ -16,7 +16,8 @@ Order of operations:
 
 Michael Royster
 Drexel University
-February 24, 2015
+April 3
+, 2015
 """
 
 # Importing modules
@@ -24,7 +25,8 @@ from neuron import *
 from neuron import h as _h
 from nrn import *
 import numpy
-
+import time
+import os
 
 
 # Stimulus class
@@ -72,6 +74,9 @@ class NeuSim:
 	CHEM_DIST_CUT_DEF = 155.0
 	CHEM_DELAY_SHORT_DEF = 150.0
 	CHEM_DELAY_LONG_DEF = 300.0
+
+	# Placeholder for invalid SPIKY number
+	SPIKY_BLANK_TRAIN = 0.0
 #$$$$$$$$$$$$$$$$$$$$$$$$$$$ END CONSTANTS REGION $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$#
 
 
@@ -89,7 +94,8 @@ class NeuSim:
 			neur_dists, 
 			neur_conn, 
 			sim_time, 
-			index_inhib):
+			index_inhib,
+			stim_seed=None):
 		
 		# Instantiating lists
 		self.__NC = []
@@ -117,7 +123,7 @@ class NeuSim:
 		self.__h.load_file ("sIN_template")
 	
 		# Initializing variables		
-		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib)
+		self.Initialize(neur_num, neur_dists, neur_conn, sim_time, index_inhib, stim_seed)
 		self.Set_Chem_Conn_Weights()
 		return
 	
@@ -128,7 +134,10 @@ class NeuSim:
 			neur_dists, 
 			neur_conn, 
 			sim_time, 
-			index_inhib):
+			index_inhib,
+			stim_seed=None):
+
+
 
 		# Setting variables
 		self.__num = neur_num	
@@ -136,6 +145,11 @@ class NeuSim:
 		self.__conn = neur_conn
 		self.__dists = neur_dists
 		self.__inhib = index_inhib
+		self.__stim_seed = (int(time.time()*5) + os.getpid()) if stim_seed is None else stim_seed
+
+		# Setting the random stimulation seed
+		self.__h.NetStim().seed(self.__stim_seed)
+
 	
 		# Creating neurons in the networks.
 		numSegs = 3
@@ -355,10 +369,11 @@ class NeuSim:
 	# The dictionary also contains a list of times.
 	# The function also calls various writing subroutines if output files are specified. 
 	def Run(self, 
-			raster_file = None,  
-			raw_data_file = None,
-			raster_format = "%d\n%f\n", 
-			raster_delim = 0):
+		raster_file = None,  
+		raw_data_file = None,
+		spike_file = None,
+		raster_use_tab = False, 
+		raster_delim = 0):
 		#Creating result vector
 		rslt_vec = {}
 
@@ -378,13 +393,15 @@ class NeuSim:
 
 		# Writing data to raster plot if desired
 		if raster_file is not None:
-			print raster_file
-			self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_format)
+			self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_use_tab)
 
 		# Writing raw data file if desired
 		if raw_data_file is not None:
-			print raw_data_file
 			self.WriteRawData(raw_data_file, rslt_vec)
+
+		# Writing spiky data file if desired
+		if spike_file is not None:
+			self.WriteSpikeData(spike_file, rslt_vec, raster_delim)
 
 		return rslt_vec
 
@@ -423,6 +440,47 @@ class NeuSim:
 					# The signal can spike again
 					canFire = True
 		
+		# Closing file
+		f.close()
+		return
+
+	def WriteSpikeData(self, spike_file, data, threshold = 0):
+		# Opening output file		
+		f = open(spike_file, 'w')
+
+		# Looping over all neurons
+		for j in range(0, self.__num):
+			# Checking if neuron ever fires
+			ever_fire = False
+
+			# Setup for jth neuron
+			canFire = True
+			jstr = str(j+1)
+
+			# Looping over every time
+			for i in range(0,len(data['t '])):
+				# If the potneital is above the delimiter and first fire
+				if (data[jstr][i] > threshold) & (canFire):
+					# Writing data
+					f.write("%f " % data['t '][i])
+					
+					# Signifying the spike has been found
+					canFire = False
+
+					# Maraking neuron as having fired
+					ever_fire = True
+
+				elif (data[jstr][i] < threshold):
+					# The signal can spike again
+					canFire = True
+
+			# Ensuring that there is information on the line in case there was no firing
+			if not ever_fire:
+				f.write("%f " % self.SPIKY_BLANK_TRAIN)
+
+			# Ending line
+			f.write("\n")
+
 		# Closing file
 		f.close()
 		return

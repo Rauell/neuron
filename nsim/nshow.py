@@ -12,15 +12,15 @@ def clear():
 	_raw_f = None
 	_raster_f = None
 
-def load_raw(file):
+def load_raw(f):
 	global _raw_f, _t 
-	_raw_f = file
+	_raw_f = f
 	_t = np.loadtxt(_raw_f, usecols=[0])
 	return _t
 
-def load_raster(file, t=None):
+def load_raster(f, t=None):
 	global _raster_f, _t
-	_raster_f = file
+	_raster_f = f
 
 def plot_pot(ID, auto_configure=True):
 	

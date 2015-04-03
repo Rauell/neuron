@@ -1,7 +1,0 @@
-sim_time	1000
-raster_out	/data2/L/Brain/mroyster/thinning/sims/Nochange/aut/Rect-Rand1/S/raster1.txt
-raw_out		/data2/L/Brain/mroyster/thinning/sims/NoChange/aut/Rect-Rand1/S/raw1.txt
-pos_file	/data2/L/Brain/mroyster/thinning/sims/NoChange/aut/neuBlock_18986993_000.xyz
-dists_file	/data2/L/Brain/mroyster/thinning/sims/NoChange/aut/data1.txt
-conn_file	/data2/L/Brain/mroyster/thinning/sims/NoChange/aut/young_chem_con1_10.txt
-net_conn_file	/data2/L/Brain/mroyster/thinning/sims/dry_run_0/aut/networkConstants10.txt

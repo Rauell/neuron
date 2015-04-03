@@ -3,11 +3,12 @@ template.py
 
 The following is a template script to run the neuron simulation.
 The only thing that needs to be modified are the addition of
-stimuli to make this fully functional.
+stimuli to make this fully functional. You can make any modifications 
+to the input file as long as it is of ther form [ID] [VALUE].
 
 Michael Royster
 Drexel University
-February 24, 2015
+April 3, 2015
 """
 
 
@@ -36,7 +37,8 @@ col_pos_file	file containing column ids and neuron positions
 
 ## Output files ##
 raw_file		file to overwrite with raw sim data
-raster_file		file to overwrite with raswer sim data
+raster_file		file to overwrite with raster sim data (to be depreciated)
+spike_file		file to overwrite with spike times
 '''
 
 
@@ -46,6 +48,7 @@ import sys
 import nsim
 import nfind
 import numpy
+import os
 
 
 # Returns a dictionary in the given format
@@ -88,7 +91,8 @@ if len(sys.argv) < 2:
 #Initialzation Begin
 #######################################################
 
-#Allocating used variables
+# Allocating used variables
+# If not in input file, then value is None
 neur_L = None
 neur_pos = None
 neur_col = None
@@ -96,28 +100,33 @@ neur_conn = None
 neur_dist = None
 raw_out_file = None
 raster_out_file = None
+spike_out_file = None
 
 
 #Reading inputs
 inputs = ReadInputFile(sys.argv[1])
 
 #Reading in simulation time
-sim_time = int(inputs['sim_time'])
+if 'sim_time' in inputs:
+	sim_time = int(inputs['sim_time'])
 
 
 #Reading in network constants
-fin = open(inputs['net_con_file'], 'r')
-lines = fin.readlines()
-fin.close()
+if 'net_con_file' in inputs:
+	fin = open(inputs['net_con_file'], 'r')
+	lines = fin.readlines()
+	fin.close()
 
-num_neurons = int(lines[0])
-index_inhib = int(lines[1])
-if 3 <= len(lines): #Accounting for variability in file format
-	L = int(lines[2])
+	num_neurons = int(lines[0])
+	index_inhib = int(lines[1])
+	if 3 <= len(lines): #Accounting for variability in file format
+		L = int(lines[2])
 
 #Reading in neuron topology files 
-neur_dist = numpy.loadtxt(inputs['dist_file'], delimiter=',')
-neur_conn = numpy.loadtxt(inputs['conn_file'], delimiter=',')
+if 'dist_file' in inputs:
+	neur_dist = numpy.loadtxt(inputs['dist_file'], delimiter=',')
+if 'conn_file' in inputs:
+	neur_conn = numpy.loadtxt(inputs['conn_file'], delimiter=',')
 
 
 #Reading in optional topology files
@@ -135,6 +144,8 @@ if 'raw_file' in inputs:
  	raw_out_file = inputs['raw_file']
 if 'raster_file' in inputs:
 	raster_out_file = inputs['raster_file']
+if 'spike_file' in inputs:
+	spike_out_file = inputs['spike_file']
 #######################################################
 #Initialzation End
 
@@ -143,7 +154,7 @@ if 'raster_file' in inputs:
 
 #Ending Double-Checking
 #######################################################
-if (raw_out_file is None) and (raster_out_file is None):
+if (raw_out_file is None) and (raster_out_file is None) and (spike_file is None):
 	print "\nWARNING! No ouptut file specfied. No data will be recorded"
 	answer = raw_input("Continue anyway? (y/n): ")
 
@@ -165,6 +176,7 @@ if (raw_out_file is None) and (raster_out_file is None):
 start_time = time.time()
 
 #Convention is that neuron id's range from 1, 2, 3, ..., N-1, N
+#os.chdir('/home/mroyster/neuron/')
 Simulation = nsim.NeuSim(num_neurons, neur_dist, neur_conn, sim_time, index_inhib)
 
 ''' INSERT NEW CODE HERE '''
@@ -186,7 +198,12 @@ Simulation = nsim.NeuSim(num_neurons, neur_dist, neur_conn, sim_time, index_inhi
 
 
 #Running simulation
-vec = Simulation.Run(raster_out_file, raw_out_file)
+vec = Simulation.Run()
+
+# Writing data
+#Simulation.WriteRawData(raw_out_file, vec)
+#Simulation.WriteRasterPlot(raster_out_file, vec)
+#Simulation.WriteSpikeData(spike_out_file, vec)
 
 # Displaying information
 print "Entire simulation took %f seconds" % (time.time() - start_time)

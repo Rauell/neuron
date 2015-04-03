@@ -12,12 +12,10 @@ from 1 to N.
 
 Michael Royster
 Drexel University
-February 
+March 3, 2015 
 """
 import numpy
 import nset
-import matplotlib.pyplot
-from mpl_toolkits.mplot3d import Axes3D
 
 
 # Module variables
@@ -125,8 +123,18 @@ def Clear():
 	_center = []
 
 def Plot(pos, mark_center=True, show=True):
-
 	global _select, _center
+
+
+	# Loading necessary plotting modules
+	try:
+		import matplotlib.pyplot
+		from mpl_toolkits.mplot3d import Axes3D
+	except RuntimeError as e:
+		print "RuntimeError importing matplotlib.pyplot: ", e
+		print "Leaving nfind.Plot"
+		return
+	
 
 	# Prepping variables	
 	c = list(_center)
