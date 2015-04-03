@@ -10,12 +10,11 @@ axon = Section()
 axon.L = 3
 axon.nseg = 3
 axon.insert('hh')
-axon.insert('pas')
 
 VecAxon = h.Vector()
 VecAxon.record(axon(0.1)._ref_v)
 stim = h.IClamp(axon(0))
-stim.dur = 20
+stim.dur = 100
 vecCurrent = h.Vector()
 vecCurrent.record(stim._ref_i)
 
@@ -24,7 +23,8 @@ time.record(h._ref_t)
 listOfSines = []
 listOfTimes = []
 for i in range(0,100):
-	listOfSines.append(sin(18*i*pi/4)+5)
+	listOfSines.append(rand(1,1))
+	#listOfSines.append(5*sin(0.5*i*pi/4)+5)
 	listOfTimes.append(i)
 VecT = h.Vector(listOfTimes)
 VecStim = h.Vector(listOfSines)
@@ -37,7 +37,7 @@ VecStim.play(stim._ref_amp, VecT, 1)
 #h.VecStim.play(stim, VecT, 1)
 
 h.finitialize(-68)
-run(10)
+run(100)
 
 
 # plot the results
