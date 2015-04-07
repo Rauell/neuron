@@ -16,8 +16,7 @@ Order of operations:
 
 Michael Royster
 Drexel University
-April 3
-, 2015
+April 3, 2015
 """
 
 # Importing modules
@@ -145,7 +144,7 @@ class NeuSim:
 		self.__conn = neur_conn
 		self.__dists = neur_dists
 		self.__inhib = index_inhib
-		self.__stim_seed = (int(time.time()*5) + os.getpid()) if stim_seed is None else stim_seed
+		self.__stim_seed = int(time.time()*563 + 2139670571*os.getpid()) if stim_seed is None else stim_seed
 
 		# Setting the random stimulation seed
 		self.__h.NetStim().seed(self.__stim_seed)
