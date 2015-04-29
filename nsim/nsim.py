@@ -232,23 +232,21 @@ class NeuSim:
 	
 					
 					#Determine weight from particular type of connection
-					#######################################################
-					s1 = 20
-					s2 = 1					
+					#######################################################				
 
 					# This means the source is EXCITATORY					
 					if i < self.__inhib: 
 						if j < self.__inhib: #E -> E
-							nc.weight[0] = self.__EE*s1
+							nc.weight[0] = self.__EE
 						else: #E -> I
-							nc.weight[0] = self.__EI*s1
+							nc.weight[0] = self.__EI
 					
 					# This means the source is INHIBITORY					
 					else:   	
 						if j < self.__inhib: #I -> E
-							nc.weight[0] = self.__IE*s2
+							nc.weight[0] = self.__IE
 						else: #I -> I
-							nc.weight[0] = self.__II*s2
+							nc.weight[0] = self.__II
 					#######################################################
 
 					# Determine delay from intersomatic distance
@@ -408,6 +406,10 @@ class NeuSim:
 	# Writes neuron id's and spike times to output file. 1 id is paried to one 
 	# firing time. Spikes are recorded based on the threshold value
 	def WriteRasterPlot(self, raster_file, data, threshold = 0, use_tab = False):
+		# Checking all inputs
+		if raster_file is None or data is None:
+			return
+
 		# Using format specified by user
 		format = None
 		if use_tab:
@@ -443,7 +445,11 @@ class NeuSim:
 		f.close()
 		return
 
-	def WriteSpikeData(self, spike_file, data, threshold = 0):
+	def WriteSpikeData(self, spike_file, data, threshold = 0):	
+		# Checking all inputs
+		if spike_file is None or data is None:
+			return
+
 		# Opening output file		
 		f = open(spike_file, 'w')
 
@@ -488,6 +494,10 @@ class NeuSim:
 	# Writes a file with the first column listing the times and each other column
 	# representing the neuron potential. Columns are ordered by neuron id. 
 	def WriteRawData(self, data_file, data):
+		# Checking all inputs
+		if data_file is None or data is None:
+			return
+
 		# Opening output file
 		f = open(data_file, 'w')
 
