@@ -1,5 +1,25 @@
 function connStruct = LoadParams(connStruct, directory_name)
 
+%{
+    This program will be used to load input parameters for constructing
+    neural networks for simulations.
+
+    INPUT
+
+    directory_name = Name of directory containing neural files
+    connStruct =  Connectivity structure with several fields determining
+    types of connectivity networks
+
+    OUTPUT
+
+    connStruct = Connectivity structure with several fields determining
+    types of connectivity networks
+
+    Max Henderson and Michael Royster
+    Last updated : April 13th, 2015
+    Drexel University
+%}
+
 %% Load input parameters for connectivity.
 params = strcat(directory_name, 'paramsCon.txt'); % --- file with neuron to reproduce
 fileID = fopen(params);

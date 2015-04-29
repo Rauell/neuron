@@ -232,23 +232,21 @@ class NeuSim:
 	
 					
 					#Determine weight from particular type of connection
-					#######################################################
-					s1 = 20
-					s2 = 1					
+					#######################################################				
 
 					# This means the source is EXCITATORY					
 					if i < self.__inhib: 
 						if j < self.__inhib: #E -> E
-							nc.weight[0] = self.__EE*s1
+							nc.weight[0] = self.__EE
 						else: #E -> I
-							nc.weight[0] = self.__EI*s1
+							nc.weight[0] = self.__EI
 					
 					# This means the source is INHIBITORY					
 					else:   	
 						if j < self.__inhib: #I -> E
-							nc.weight[0] = self.__IE*s2
+							nc.weight[0] = self.__IE
 						else: #I -> I
-							nc.weight[0] = self.__II*s2
+							nc.weight[0] = self.__II
 					#######################################################
 
 					# Determine delay from intersomatic distance

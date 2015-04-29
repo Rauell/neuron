@@ -101,6 +101,7 @@ neur_dist = None
 raw_out_file = None
 raster_out_file = None
 spike_out_file = None
+stim_int = None
 
 
 #Reading inputs
@@ -110,6 +111,9 @@ inputs = ReadInputFile(sys.argv[1])
 if 'sim_time' in inputs:
 	sim_time = int(inputs['sim_time'])
 
+#Reading in stimulation time
+if 'stim_int' in inputs:
+	stim_int = int(inputs['stim_int'])
 
 #Reading in network constants
 if 'net_con_file' in inputs:
@@ -154,7 +158,7 @@ if 'spike_file' in inputs:
 
 #Ending Double-Checking
 #######################################################
-if (raw_out_file is None) and (raster_out_file is None) and (spike_file is None):
+if (raw_out_file is None) and (raster_out_file is None) and (spike_out_file is None):
 	print "\nWARNING! No ouptut file specfied. No data will be recorded"
 	answer = raw_input("Continue anyway? (y/n): ")
 
@@ -178,14 +182,15 @@ start_time = time.time()
 #Convention is that neuron id's range from 1, 2, 3, ..., N-1, N
 #os.chdir('/home/mroyster/neuron/')
 Simulation = nsim.NeuSim(num_neurons, neur_dist, neur_conn, sim_time, index_inhib)
+Simulation.Construct_Chem_Conn()
 
 ''' INSERT NEW CODE HERE '''
 #Creating stimulations
 
 
 ''' EXAMPLES '''
-#Simulation.AddStim()
-#Simulation.AddStim(neuron_id=3, interval=25, t_start=0, t_end=sim_time, noise = 0)
+Simulation.AddStim(interval=stim_int)
+#Simulation.AddStim(interval=25)
 
 #corner = nfind.Rect(neur_pos, L=L, x=[0,0.25], y=[0,0.25], z=[0,0.25])
 #Stimulation.AddStim(corner, interval=100, t_start=200)
@@ -202,8 +207,8 @@ vec = Simulation.Run()
 
 # Writing data
 #Simulation.WriteRawData(raw_out_file, vec)
-#Simulation.WriteRasterPlot(raster_out_file, vec)
-#Simulation.WriteSpikeData(spike_out_file, vec)
+Simulation.WriteRasterPlot(raster_out_file, vec)
+Simulation.WriteSpikeData(spike_out_file, vec)
 
 # Displaying information
 print "Entire simulation took %f seconds" % (time.time() - start_time)

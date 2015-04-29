@@ -3,15 +3,15 @@
 
 # Necessary Inputs
 sim_time		1000
-conn_file		/data2/L/Brain/mroyster/solo/ConReg1.txt
-dist_file		/data2/L/Brain/mroyster/solo/Dists1.txt
-net_con_file		/data2/L/Brain/mroyster/solo/networkConstants1.txt
+conn_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/C1.txt
+dist_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/D1.txt
+net_con_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/networkConstants1.txt
 
 # Optional Inputs
-pos_file		/data2/L/Brain/mroyster/solo/Pos1.txt
-col_file		/data2/L/Brain/mroyster/solo/Col1.txt
+pos_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/PosYoung1.txt
+col_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/ID1.txt
 
 # Output Files
-raster_file		/data2/L/Brain/mroyster/solo/Sraster1.txt
-raw_file		/data2/L/Brain/mroyster/solo/Sraw1.txt
-spike_file		/data2/L/Brain/mroyster/solo/Sspike1.txt
+raster_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/Sraster1.txt
+raw_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/Sraw1.txt
+spike_file		/data2/L/Brain/max/Paper3Data/ConnectivityMaster/1/Sspike1.txt

@@ -49,6 +49,10 @@ function connStruct = CreateConnectivityStructure()
     ID = Matrix containing micrcolumnar IDs for all neurons
     x = Percent of connections to add in addition to microcolumnar
     connections
+    SEE = Mean strength and std of EE connections
+    SEI = Mean strength and std of EI connections
+    SIE = Mean strength and std of IE connections
+    SII = Mean strength and std of EE connections
 
     Max Henderson and Michael Royster
     Last updated: March 26, 2015
@@ -85,4 +89,8 @@ connStruct = struct('gc', 0.02, ... % Range from 0 to 1.
 'threshProb', [0.3 0.3 0.3 0.3], ... % Range from 0 to 1
 'L', 100, ... % No true bounds
 'ID', 0, ... % From -1 to max # microcolumns
-'x', 0); % From 0 to inf
+'x', 0, ... % From 0 to inf
+'SEE', [0.05 0.01], ...
+'SEI', [0.2 0.04], ...
+'SIE', [-0.05 0.01], ...
+'SII', [-0.1 0.02]); 

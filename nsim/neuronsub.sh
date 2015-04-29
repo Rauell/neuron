@@ -1,0 +1,1 @@
+npython template.py ../testInput

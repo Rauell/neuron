@@ -12,10 +12,12 @@ function [C, connStruct] = ConnectNeurons(connStruct, data)
 
     OUTPUT
 
-    D = 
+    C = Matrix of connections for the network
+    connStruct = Connectivity structure with several fields determining
+    types of connectivity networks
 
     Max Henderson and Michael Royster
-    Last updated: March 26, 2015
+    Last updated: April 7, 2015
     Drexel University
 %}
 

@@ -1,5 +1,26 @@
-function fileCount = RenameDataFiles(directory_name, connStruct)
+function fileCount = RenameDataFiles(directory_name, connStruct, randYes)
 
+%{
+    This program will be used to reformat files that were originally 
+    generated using the slicegen program.  This will determine how many
+    total files are in the program, and rename them accordingly for easier
+    access and use.
+
+    INPUT
+
+    directory_name = Name of directory containing neural files
+    connStruct =  Connectivity structure with several fields determining
+    types of connectivity networks
+    randYes = Create random networks?
+
+    OUTPUT
+
+    fileCount = Number of total files to consider in the directory
+
+    Max Henderson and Michael Royster
+    Last updated : April 7th, 2015
+    Drexel University
+%}
 
 %% Load the files in the directory to get neural distributions.
 files = dir(directory_name);
@@ -32,27 +53,21 @@ for i = 1:length(fileIndex)
                 dataYoung = single(textread( file_potentials , '%f',-1,'commentstyle','shell'));
                 dataYoung = reshape(dataYoung, 3, length(dataYoung)/3)';
                 dataYoung = ScaleToMicrons(dataYoung, L);
-                inhibIndex = GetInhibIndex(ID);
-                
-                % Save both the size of the network and the index wherein the
-                % inhibitory neurons kick in.
-
-                n = length(dataYoung);
-                save = [n; inhibIndex];
-                n1 = sprintf('%s/networkConstants%d.txt',directory_name, fileCount);
-                edit 'n1';          
-                dlmwrite(n1, save);
                 
                 % Save distance results
-                n1 = sprintf('%s/PosYoung%d.txt',directory_name, fileCount);
-                edit 'n1';          
+                n1 = sprintf('%s/PosYoung%d.txt',directory_name, fileCount);        
                 dlmwrite(n1, dataYoung);
                 
-                %dataRandom = L*rand(length(dataYoung), 3);
-                n1 = sprintf('%s/ID%d.txt',directory_name, fileCount);
-                edit 'n1';          
+                % Save microcolumnar IDs
+                n1 = sprintf('%s/ID%d.txt',directory_name, fileCount);        
                 dlmwrite(n1, ID);
                
+                % Make (or don't) random networks..
+                if randYes == 1,
+                    dataRandom = L*rand(length(dataYoung), 3);
+                    n1 = sprintf('%s/PosRand%d.txt',directory_name, fileCount);        
+                    dlmwrite(n1, dataRandom);
+                end
         end
         
     end
