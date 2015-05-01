@@ -208,7 +208,7 @@ class NeuSim:
 
 # FUNCTION: Construct Chemical Connections
 # Chemical connection code modifed from Max Henderson's 'microcolumn_v5.py'
-	def Construct_Chem_Conn(self):
+	def Construct_Chem_Conn(self, use_defaults=True):
 		# Cleaning relavent lists		
 		del self.__SYN[:]
 		del self.__NC[:]
@@ -221,7 +221,7 @@ class NeuSim:
 		for i in range(0, self.__num):
 	 		for j in range(0, self.__num):
 				# If there is a connection i -> j
-				if self.__conn[i][j] > 0: 					
+				if numpy.abs(self.__conn[i][j]) > 1.0e-8: 					
 
 					# Creating & storing a synapse targeting the center of j
 					syn = self.__h.ExpSyn (0.5, sec = self.__neurons[j].soma[0])
@@ -233,9 +233,12 @@ class NeuSim:
 					
 					#Determine weight from particular type of connection
 					#######################################################				
+					# Weight determined from file
+					if not use_defaults:
+						nc.weight[0] = self.__conn[i][j]
 
 					# This means the source is EXCITATORY					
-					if i < self.__inhib: 
+					elif i < self.__inhib: 
 						if j < self.__inhib: #E -> E
 							nc.weight[0] = self.__EE
 						else: #E -> I
@@ -389,16 +392,13 @@ class NeuSim:
 		self.__h.run()
 
 		# Writing data to raster plot if desired
-		if raster_file is not None:
-			self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_use_tab)
+		self.WriteRasterPlot(raster_file, rslt_vec, raster_delim, raster_use_tab)
 
 		# Writing raw data file if desired
-		if raw_data_file is not None:
-			self.WriteRawData(raw_data_file, rslt_vec)
+		self.WriteRawData(raw_data_file, rslt_vec)
 
 		# Writing spiky data file if desired
-		if spike_file is not None:
-			self.WriteSpikeData(spike_file, rslt_vec, raster_delim)
+		self.WriteSpikeData(spike_file, rslt_vec, raster_delim)
 
 		return rslt_vec
 

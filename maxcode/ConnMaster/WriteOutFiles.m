@@ -97,6 +97,6 @@ n1 = sprintf('%s/ID.txt',directory_name);
 dlmwrite(n1, save);
 
 inhibIndex = GetInhibIndex(ID);
-save = [connStruct.N; inhibIndex];
+save = [connStruct.N; inhibIndex; connStruct.L];
 n1 = sprintf('%s/networkConstants.txt',directory_name);
 dlmwrite(n1, save);

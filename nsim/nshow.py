@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pyspike as spk
 
 _t = None
 _raw_f = None
@@ -17,6 +18,13 @@ def load_raw(f):
 	_raw_f = f
 	_t = np.loadtxt(_raw_f, usecols=[0])
 	return _t
+
+def raster_plot(file):
+  spike_trains = spk.load_spike_trains_from_txt(file)
+  plt.figure()
+  for (i, spikes) in enumerate(spike_trains):
+    plt.plot(spikes, i*np.ones_like(spikes), 'b|')
+  plt.show()
 
 def load_raster(f, t=None):
 	global _raster_f, _t
