@@ -1,8 +1,11 @@
-function [] = PlotSpikeTrainFromFileName(name, N)
+function [] = PlotSpikeTrainFromFileName(name, stim)
 
 %% Read in the potentials across the neurons from the simulation.
-file_potentials = strcat(name);
-t = single(textread( file_potentials , '%f',-1,'commentstyle','shell'))
+file_potentials = strcat(name, 'raster.', int2str(stim), '.txt')
+t = single(textread( file_potentials , '%f',-1,'commentstyle','shell'));
+file_potentials = strcat(name, 'networkConstants.txt')
+N = single(textread( file_potentials , '%f',-1,'commentstyle','shell'));
+N = N(1);
 
 %% Put into matrix form.
 spikes = zeros(N);
@@ -13,4 +16,4 @@ for i = 1:length(t)/2,
 end
 
 %% Plot.
-PlotSpikeTrains(spikes, N, 1000);
+PlotSpikeTrains(spikes, N, 2000);

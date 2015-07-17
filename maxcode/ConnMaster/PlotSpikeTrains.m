@@ -8,7 +8,7 @@ function [] = PlotSpikeTrains(spikeTrain, numNeurons, simTime)
     1/4/14
     Drexel University
 %}
-
+cla
 spikeTrain = spikeTrain';
 [l, w] = size(spikeTrain);
 axis([0 simTime 0 numNeurons+1])

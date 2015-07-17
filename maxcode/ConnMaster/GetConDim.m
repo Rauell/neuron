@@ -41,7 +41,7 @@ if choice == 1, % EE
         
     else
         
-        Dtemp = connStruct.DEEz;
+        Dtemp = connStruct.DEE;
         
     end
     
@@ -60,7 +60,7 @@ elseif choice == 2, % EI
         
     else
         
-        Dtemp = connStruct.DEIz;
+        Dtemp = connStruct.DEI;
         
     end
     
@@ -79,7 +79,7 @@ elseif choice == 3, % IE
         
     else
         
-        Dtemp = connStruct.DIEz;
+        Dtemp = connStruct.DIE;
         
     end
     
@@ -98,7 +98,7 @@ else % II
         
     else
         
-        Dtemp = connStruct.DIIz;
+        Dtemp = connStruct.DII;
         
     end
     

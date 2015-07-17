@@ -49,10 +49,17 @@ function connStruct = CreateConnectivityStructure()
     ID = Matrix containing micrcolumnar IDs for all neurons
     x = Percent of connections to add in addition to microcolumnar
     connections
-    SEE = Mean strength and std of EE connections
-    SEI = Mean strength and std of EI connections
-    SIE = Mean strength and std of IE connections
-    SII = Mean strength and std of EE connections
+    SEE_mean = Mean strength of EE connections
+    SEI_mean = Mean strength of EI connections
+    SIE_mean = Mean strength of IE connections
+    SII_mean = Mean strength of EE connections
+    SEE_std = Std of EE connections
+    SEI_std = Std of EI connections
+    SIE_std = Std of IE connections
+    SII_std = Std of EE connections
+    Rand = Flag to make random networks (or not)
+    inputDir = Input directory to get files
+    outputDir = Output directory for generated connectivities
 
     Max Henderson and Michael Royster
     Last updated: March 26, 2015
@@ -90,7 +97,14 @@ connStruct = struct('gc', 0.02, ... % Range from 0 to 1.
 'L', 100, ... % No true bounds
 'ID', 0, ... % From -1 to max # microcolumns
 'x', 0, ... % From 0 to inf
-'SEE', [0.05 0.01], ...
-'SEI', [0.2 0.04], ...
-'SIE', [-0.05 0.01], ...
-'SII', [-0.1 0.02]); 
+'SEE_mean', 0.05, ... % No true bounds
+'SEI_mean', 0.2, ... % No true bounds
+'SIE_mean', -0.05, ... % No true bounds
+'SII_mean', -0.1, ... % No true bounds
+'SEE_std', 0.01, ... % No true bounds
+'SEI_std', 0.04, ... % No true bounds
+'SIE_std', 0.01, ... % No true bounds
+'SII_std', 0.02, ... % No true bounds
+'Rand', 0, ... % 0 or 1
+'inputDir', 'default', ... % any particular string
+'outputDir', 'default'); % any particular string

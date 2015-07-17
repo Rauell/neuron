@@ -20,9 +20,18 @@ function [C] = CreateSynapses(connStruct, C)
 %}
 
 %% Create new matrix of connections that has synaptic strengths built-in.
-SEE =  normrnd(connStruct.SEE(1), connStruct.SEE(2), connStruct.NE, connStruct.NE);
-SEI =  normrnd(connStruct.SEI(1), connStruct.SEI(2), connStruct.NE, connStruct.NI);
-SIE =  normrnd(connStruct.SIE(1), connStruct.SIE(2), connStruct.NI, connStruct.NE);
-SII =  normrnd(connStruct.SII(1), connStruct.SII(2), connStruct.NI, connStruct.NI);
-S   = [SEE SEI; SIE SII];
-C   = S.*C;
+if length(C) < 1000,
+    SEE =  normrnd(connStruct.SEE_mean, connStruct.SEE_std, connStruct.NE, connStruct.NE);
+    SEI =  normrnd(connStruct.SEI_mean, connStruct.SEI_std, connStruct.NE, connStruct.NI);
+    SIE =  normrnd(connStruct.SIE_mean, connStruct.SIE_std, connStruct.NI, connStruct.NE);
+    SII =  normrnd(connStruct.SII_mean, connStruct.SII_std, connStruct.NI, connStruct.NI);
+    S   = [SEE SEI; SIE SII];
+    C   = S.*C;
+else
+    for i = 1:length(C),
+        for j = 1:length(C),
+            s = GetSynapticStrength(i,j,connStruct);
+            C(i,j) = s*C(i,j);
+        end
+    end
+end
